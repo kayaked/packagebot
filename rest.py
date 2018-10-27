@@ -1,1 +1,0 @@
-import os; os.remove('.package_no_barge')
