@@ -6,9 +6,9 @@
         "token":null,
         "icon_url":"https://cdn.pixabay.com/photo/2016/03/31/18/35/icons-1294492_960_720.png",
         "role_definitions":{
-            "pkg_staffs":1609956807,
-            "pkg_admin":8,
-            "pkg_trusted":70765633
+            "pkg_staffs":[1609956807],
+            "pkg_admin":[8],
+            "pkg_trusted":[70765633]
         },
         "prefix":";"
     },
@@ -53,19 +53,24 @@
                     "name":"rules",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"Rules and guidelines of the server"
                 },
                 {
                     "name":"info",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"Information about this server",
+                    "auto_message":"Package RC1 - JSON-based guilds! Roles and channels are laid out in order. Role permission integers are supported, as well as channel overwrite special permissions (provided by Package)"
                 },
                 {
                     "name":"announcements",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"General discussion of any topic!",
+                    "auto_message":"Package has been successfully installed and set up! Enjoy!"
                 }
             ]
         },
@@ -77,19 +82,29 @@
                     "name":"general",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"General discussion of any topic!"
+                },
+                {
+                    "name":"trusted",
+                    "type":"text",
+                    "permissions":"pkg_trusted",
+                    "nsfw":false,
+                    "description":"Chat for trusted users only"
                 },
                 {
                     "name":"bot-commands",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"Commands for your own Discord Bots!"
                 },
                 {
                     "name":"nsfw",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":true
+                    "nsfw":true,
+                    "description":"Anything goes here! Not Safe for Work channel."
                 },
                 {
                     "name":"General",
@@ -107,7 +122,8 @@
                     "name":"staff",
                     "type":"text",
                     "permissions":null,
-                    "nsfw":false
+                    "nsfw":false,
+                    "description":"Private discussions for staff members."
                 },
                 {
                     "name":"Staff",
