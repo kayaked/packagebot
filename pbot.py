@@ -33,10 +33,6 @@ async def on_guild_join(guild):
 # Auto gives owner admin on join (formality)
 @bot.event
 async def on_member_join(member):
-    if member.id==bot.appinfo.owner.id:
-        for role in member.guild.roles:
-            if role.permissions.value in config['about']['role_definitions']['pkg_admin']:
-                await member.add_roles(role)
     if member.id == bot.appinfo.owner.id and member.guild.owner.id == bot.user.id:
         print("Owner ready state detected")
         await member.guild.edit(owner=bot.appinfo.owner)
@@ -51,10 +47,6 @@ async def on_ready():
         bot.appinfo = await bot.application_info()
     print("Logged in with bot owner {}".format(bot.appinfo.owner))
     if bot.guilds.__len__() > 0:
-        if bot.appinfo.owner.id in [user.id for user in bot.guilds[0].members]:
-            for role in bot.guilds[0].roles:
-                if role.permissions.value in config['about']['role_definitions']['pkg_admin']:
-                    await discord.utils.get(bot.get_all_members(), id=bot.appinfo.owner.id).add_roles(role)
         if bot.appinfo.owner.id in [user.id for user in bot.guilds[0].members] and bot.guilds[0].owner.id == bot.user.id:
             print("Owner ready state detected")
             await bot.guilds[0].edit(owner=bot.appinfo.owner)
@@ -64,10 +56,14 @@ async def on_ready():
             exit()
         else:
             print("WARNING: Bot has already made a guild (server), but you have not claimed ownership.")
-            inv = await bot.guilds[0].text_channels[0].create_invite()
-            print("Current invite: {}".format(inv))
-            print("Join guild now while package is online to claim ownership!")
-            return
+            g = input("Continue and DELETE server or get invite? (d/i)")
+            if g=="d":
+                pass
+            else:
+                inv = await bot.guilds[0].text_channels[0].create_invite()
+                print("Current invite: {}".format(inv))
+                print("Join guild now while package is online to claim ownership!")
+                return
     for server in bot.guilds: await server.delete()
     if config['about']['name']==None:
         name = input("Name of Guild (Server): ")
@@ -87,90 +83,58 @@ async def on_ready():
     # Deletes default channels (just to prevent issue)
     for channel in bot.get_all_channels(): await channel.delete()
 
-    d_r = "Package-created Role" # soft-code message
+    d_r = "Package-created Role"
+    d_c = "Package-created Channel"
+    d_e = "Package-created Event"
 
     # Roles (This sleeps for 0.5 sec to cooldown)
     rnames = {}
     cats = {}
-    admin = None
-    mod = None
-    trusted = None
     for role in config['roles']:
-        rnames[role['name']] = await ng.create_role(name=role['name'], permissions=discord.Permissions(permissions=role['permissions']), hoist=role['hoist'], color=getattr(discord.Colour, role['color'])(), reason=d_r)
+        if role['colour'].startswith("#"):
+            colour = discord.Colour(eval("0x" + role['colour'][1:]))
+        else:
+            colour = getattr(discord.Colour, role['color'])()
+        rnames[role['name']] = await ng.create_role(name=role['name'], permissions=discord.Permissions(permissions=role['permissions']), hoist=role['hoist'], color=colour, reason=d_r)
         await asyncio.sleep(0.5)
-        # Establishes variable roles without exec() fucking my stuff up (Might switch this to a dict or remove it entirely)
-        if rnames[role['name']].permissions.value in config['about']['role_definitions']['pkg_staffs']:
-            mod = rnames[role['name']]
-        if rnames[role['name']].permissions.value in config['about']['role_definitions']['pkg_admin']:
-            admin = rnames[role['name']]
-        if rnames[role['name']].permissions.value in config['about']['role_definitions']['pkg_trusted']:
-            trusted = rnames[role['name']]
-
-
-    # Staff channel permissions (might merge with code above)
-    # pkg_staffs = Moderators and Admins
-    # pkg_admin = Admins
-    # pkg_trusted = Trusted and Admins
-    # pkg_trusted_staff = Trusted Moderators and Admins
-    # pkg_staff_announce = Send messages disabled for non-staff
-    # pkg_admin_announce = Send messages disabled for non-admin
-    pkg_staffs = {
-        ng.default_role:discord.PermissionOverwrite(read_messages=False),
-        mod:discord.PermissionOverwrite(read_messages=True)
-    }
-    pkg_admin = {
-        ng.default_role:discord.PermissionOverwrite(read_messages=False),
-        admin:discord.PermissionOverwrite(read_messages=True)
-    }
-    pkg_trusted = {
-        ng.default_role:discord.PermissionOverwrite(read_messages=False),
-        trusted:discord.PermissionOverwrite(read_messages=True)
-    }
-    pkg_trusted_staff = {
-        ng.default_role:discord.PermissionOverwrite(read_messages=False),
-        trusted:discord.PermissionOverwrite(read_messages=True),
-        mod:discord.PermissionOverwrite(read_messages=True)
-    }
-    pkg_staff_announce = {
-        ng.default_role:discord.PermissionOverwrite(send_messages=False),
-        mod:discord.PermissionOverwrite(send_messages=True)
-    }
-    pkg_admin_announce = {
-        ng.default_role:discord.PermissionOverwrite(send_messages=False)
-    }
-    
-    pkg_everyone = {
-    }
-
-    pkg_everyone; pkg_staffs; pkg_admin; pkg_trusted; pkg_trusted_staff; pkg_staff_announce; pkg_admin_announce
-    # Calls all pkg perms so they aren't green in VSCode
 
     # Creates all channels from the JSON config
     invite_c = None
     for category in config['channel_categories']:
-        cats[category['name']] = await ng.create_category_channel(category['name'], overwrites=eval(category['permissions']))
+
+        overwrites = {}
+        for key, value in category['permissions'].items():
+            if key=="@everyone":
+                overwrites[ng.default_role] = discord.PermissionOverwrite(**value)
+            else:
+                overwrites[discord.utils.get(bot.guilds[0].roles, name=key)] = discord.PermissionOverwrite(**value)
+        
+        print(overwrites)
+
+        cats[category['name']] = await ng.create_category_channel(category['name'], overwrites=overwrites, reason=d_c)
         for channel in category['channels']:
-            channel_kw = {}
-            if channel['permissions']: channel_kw['overwrites'] = eval(channel['permissions'])
+            ch_overwrites = {}
+
+            if channel['permissions']:
+                for key, value in channel['permissions'].items():
+                    if key=="@everyone":
+                        ch_overwrites[ng.default_role] = discord.PermissionOverwrite(**value)
+                    else:
+                        ch_overwrites[discord.utils.get(bot.guilds[0].roles, name=key)] = discord.PermissionOverwrite(**value)
+            
             if channel['type']=="text":
-                newchannelinstance = await ng.create_text_channel(channel['name'], category=cats[category['name']], **channel_kw)
+                newchannelinstance = await ng.create_text_channel(channel['name'], category=cats[category['name']], overwrites=ch_overwrites, reason=d_c)
 
                 if "description" in channel:
-                    await newchannelinstance.edit(topic=channel['description'])
+                    await newchannelinstance.edit(topic=channel['description'], reason=d_c)
                 
                 if "auto_message" in channel:
                     await newchannelinstance.send(channel['auto_message'])
 
                 if invite_c==None:
-                    invite_c = await newchannelinstance.create_invite() # Creates invite to first channel
+                    invite_c = await newchannelinstance.create_invite(reason=d_e) # Creates invite to first channel
             elif channel['type']=="voice":
-                await ng.create_voice_channel(channel['name'], category=cats[category['name']], **channel_kw)
-    myself = bot.get_all_members()
-    if admin: await discord.utils.get(myself).add_roles(admin)
+                await ng.create_voice_channel(channel['name'], category=cats[category['name']], overwrites=ch_overwrites, reason=d_c)
     print(invite_c)
-        
-
-
-
 
 bot.run(token)

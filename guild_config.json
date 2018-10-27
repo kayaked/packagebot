@@ -5,11 +5,6 @@
         "region":"us_east",
         "token":null,
         "icon_url":"https://cdn.pixabay.com/photo/2016/03/31/18/35/icons-1294492_960_720.png",
-        "role_definitions":{
-            "pkg_staffs":[1609956807],
-            "pkg_admin":[8],
-            "pkg_trusted":[70765633]
-        },
         "prefix":";"
     },
     "roles":[
@@ -47,7 +42,14 @@
     "channel_categories":[
         {
             "name":"Information",
-            "permissions":"pkg_staff_announce",
+            "permissions":{
+                "Moderator":{
+                    "send_messages":true
+                },
+                "@everyone":{
+                    "send_messages":false
+                }
+            },
             "channels":[
                 {
                     "name":"rules",
@@ -76,19 +78,27 @@
         },
         {
             "name":"General",
-            "permissions":"pkg_everyone",
+            "permissions":{},
             "channels":[
                 {
                     "name":"general",
                     "type":"text",
                     "permissions":null,
                     "nsfw":false,
-                    "description":"General discussion of any topic!"
+                    "description":"General discussion of any topic!",
+                    "auto_message":"first"
                 },
                 {
                     "name":"trusted",
                     "type":"text",
-                    "permissions":"pkg_trusted",
+                    "permissions":{
+                        "Trusted":{
+                            "read_messages":true
+                        },
+                        "@everyone":{
+                            "read_messages":false
+                        }
+                    },
                     "nsfw":false,
                     "description":"Chat for trusted users only"
                 },
@@ -116,7 +126,14 @@
         },
         {
             "name":"Staff",
-            "permissions":"pkg_staffs",
+            "permissions":{
+                "@everyone":{
+                    "read_messages":false   
+                },
+                "Moderator":{
+                    "read_messages":true
+                }
+            },
             "channels":[
                 {
                     "name":"staff",
