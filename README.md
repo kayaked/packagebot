@@ -1,5 +1,9 @@
 # 📦 Package
 #### Discord bot to ease users in creating guilds, roles, and channels seamless and painlessly.
 
-to-do:
-- write the whole thing in djs lol
+To-do:
+- Allow non-category channels
+- D.js branch (written by jacc 🙂)
+- Auto-webhooks?
+- Invite handling (right now it's messy)
+- Support embeds/files for auto_message
