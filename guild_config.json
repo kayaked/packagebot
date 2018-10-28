@@ -1,42 +1,50 @@
 {
     "about":{
         "name":null,
-        "description":"Package RC1 - JSON-based guilds! Roles and channels are laid out in order. Role permission integers are supported, as well as channel overwrite special permissions (provided by Package)",
+        "description":"Package RC4 - JSON-based guilds! Roles and channels are laid out in order. Role permission integers are supported, as well as channel overwrite special permissions (provided by Package)",
         "region":"us_east",
-        "token":null,
+        "token":"NTAyNTgzMjM2ODU0MTUzMjIy.Drc4qg.2Hn-QUw9vKJvv_t_cIzUJ656RcU",
         "icon_url":"https://cdn.pixabay.com/photo/2016/03/31/18/35/icons-1294492_960_720.png",
         "prefix":";"
+    },
+    "emojis":{
+        "package":"https://cdn.pixabay.com/photo/2016/03/31/18/35/icons-1294492_960_720.png"
     },
     "roles":[
         {
             "name":"Administrator",
             "permissions":8,
             "color":"blurple",
-            "hoist":true
+            "hoist":true,
+            "pingable":false
         },
         {
             "name":"Moderator",
             "permissions":1609956807,
             "color":"magenta",
-            "hoist":true
+            "hoist":true,
+            "pingable":false
         },
         {
             "name":"Trusted",
             "permissions":70765633,
             "color":"purple",
-            "hoist":true
+            "hoist":true,
+            "pingable":false
         },
         {
             "name":"Special",
             "permissions":70634561,
-            "color":"dark_teal",
-            "hoist":true
+            "color":"#37b1b6",
+            "hoist":true,
+            "pingable":false
         },
         {
             "name":"Member",
             "permissions":70634561,
-            "color":"dark_blue",
-            "hoist":true
+            "color":[48, 80, 178],
+            "hoist":true,
+            "pingable":false
         }
     ],
     "channel_categories":[

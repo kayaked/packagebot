@@ -1,8 +1,6 @@
 import discord, os, asyncio, json, requests
 from discord.ext.commands import Bot
 
-# Please excuse the code, it's pretty bad right now
-
 # Imports configuration
 with open('guild_config.json', 'r') as fp:
     config = json.load(fp)
@@ -21,7 +19,7 @@ if proceed.upper() == "N":
 if config['about']['token']:
     token = config['about']['token']
 else:
-    token = input("Please input/paste your Discord Bot Token here: ")
+    token = input("Please input/paste then token of your Discord Bot User here: ")
 
 # Leaves a guild if not created by Package
 @bot.event
@@ -56,7 +54,7 @@ async def on_ready():
             exit()
         else:
             print("WARNING: Bot has already made a guild (server), but you have not claimed ownership.")
-            g = input("Continue and DELETE server or get invite? (d/i)")
+            g = input("Continue and DELETE server or get invite? (d/i): ")
             if g=="d":
                 pass
             else:
@@ -91,14 +89,22 @@ async def on_ready():
     rnames = {}
     cats = {}
     for role in config['roles']:
-        if role['colour'].startswith("#"):
-            colour = discord.Colour(eval("0x" + role['colour'][1:]))
+        if isinstance(role['color'], list):
+            colour = discord.Colour(eval('0x%02x%02x%02x' % tuple(role['color'])))
         else:
-            colour = getattr(discord.Colour, role['color'])()
-        rnames[role['name']] = await ng.create_role(name=role['name'], permissions=discord.Permissions(permissions=role['permissions']), hoist=role['hoist'], color=colour, reason=d_r)
+            if role['color'].startswith("#"):
+                colour = discord.Colour(eval("0x" + role['color'][1:]))
+            else:
+                colour = getattr(discord.Colour, role['color'])()
+        rnames[role['name']] = await ng.create_role(name=role['name'], permissions=discord.Permissions(permissions=role['permissions']), hoist=role['hoist'], color=colour, mentionable=role['pingable'], reason=d_r)
         await asyncio.sleep(0.5)
 
-    # Creates all channels from the JSON config
+    # Emojis (Better notation coming soon with roles n stuff)
+    if "emojis" in config:
+        for key, value in config['emojis'].items():
+            await ng.create_custom_emoji(name=key, image=requests.get(value).content, reason=d_e)
+
+    # Channels
     invite_c = None
     for category in config['channel_categories']:
 
@@ -109,7 +115,7 @@ async def on_ready():
             else:
                 overwrites[discord.utils.get(bot.guilds[0].roles, name=key)] = discord.PermissionOverwrite(**value)
         
-        print(overwrites)
+        
 
         cats[category['name']] = await ng.create_category_channel(category['name'], overwrites=overwrites, reason=d_c)
         for channel in category['channels']:
@@ -123,7 +129,11 @@ async def on_ready():
                         ch_overwrites[discord.utils.get(bot.guilds[0].roles, name=key)] = discord.PermissionOverwrite(**value)
             
             if channel['type']=="text":
-                newchannelinstance = await ng.create_text_channel(channel['name'], category=cats[category['name']], overwrites=ch_overwrites, reason=d_c)
+                try:
+                    newchannelinstance = await ng.create_text_channel(channel['name'], category=cats[category['name']], overwrites=ch_overwrites, reason=d_c)
+                except Exception as err:
+                    print("Critical error creating channel, {}".format(err))
+                    return
 
                 if "description" in channel:
                     await newchannelinstance.edit(topic=channel['description'], reason=d_c)
@@ -132,7 +142,7 @@ async def on_ready():
                     await newchannelinstance.send(channel['auto_message'])
 
                 if invite_c==None:
-                    invite_c = await newchannelinstance.create_invite(reason=d_e) # Creates invite to first channel
+                    invite_c = await newchannelinstance.create_invite(reason=d_e)
             elif channel['type']=="voice":
                 await ng.create_voice_channel(channel['name'], category=cats[category['name']], overwrites=ch_overwrites, reason=d_c)
     print(invite_c)
