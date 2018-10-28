@@ -1,8 +1,5 @@
-# packagebot
-PackageBot/pbot -Discord Python bot that auto-creates a server for you!
+# 📦 Package
+#### Discord bot to ease users in creating guilds, roles, and channels seamless and painlessly.
 
 to-do:
-- support channel permissions/descriptions
-- support member channel exceptions possibly
-- hex color codes
-- error handling
+- write the whole thing in djs lol
