@@ -3,7 +3,7 @@
         "name":null,
         "description":"Package RC4 - JSON-based guilds! Roles and channels are laid out in order. Role permission integers are supported, as well as channel overwrite special permissions (provided by Package)",
         "region":"us_east",
-        "token":"NTAyNTgzMjM2ODU0MTUzMjIy.Drc4qg.2Hn-QUw9vKJvv_t_cIzUJ656RcU",
+        "token":null,
         "icon_url":"https://cdn.pixabay.com/photo/2016/03/31/18/35/icons-1294492_960_720.png",
         "prefix":";"
     },
