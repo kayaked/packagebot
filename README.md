@@ -8,3 +8,5 @@ To-do:
 - Auto-webhooks?
 - Invite handling (right now it's messy)
 - Support embeds/files for auto_message
+
+**Warning: This feature was implemented into Discord. The function this script serves is no longer necessary.**
